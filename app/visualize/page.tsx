@@ -16,7 +16,9 @@ import {
   CartesianGrid,
 } from "recharts";
 
-/* ─── tokens ─── */
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+
 const YELLOW = "#e8c547";
 const BG = "#0a0a08";
 const FG = "#f0ede6";
@@ -112,7 +114,7 @@ function StatCard({
     <motion.div
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ delay, duration: 0.65, ease: EASE }}
       whileHover={{ borderColor: color, backgroundColor: `${color}06` }}
       style={{
         border: `1px solid ${highlight ? color : BORDER}`,
@@ -243,7 +245,7 @@ function ProjectionChart({ inputs, stats }: { inputs: Inputs; stats: Stats }) {
             contentStyle={{ background: "#111110", border: `1px solid ${BORDER}`, fontFamily: MONO, fontSize: 11 }}
             labelStyle={{ color: YELLOW }}
             itemStyle={{ color: FG }}
-            formatter={(v: number, name: string) => [`${v} yrs`, name === "screen" ? "Screen time" : "Free time"]}
+            formatter={(v, name) => [`${v ?? 0} yrs`, name === "screen" ? "Screen time" : "Free time"] as [string, string]}
           />
           <Area type="monotone" dataKey="screen" stroke={RED} strokeWidth={2} fill="url(#screenGrad)" name="screen" />
           <Area type="monotone" dataKey="free" stroke={YELLOW} strokeWidth={2} fill="url(#freeGrad)" name="free" />
@@ -283,7 +285,7 @@ function InputForm({ onSubmit }: { onSubmit: (i: Inputs) => void }) {
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.7, ease: EASE }}
       style={{ maxWidth: 640, margin: "0 auto" }}
     >
       {/* header */}
@@ -343,14 +345,14 @@ function InputForm({ onSubmit }: { onSubmit: (i: Inputs) => void }) {
                 background: key === "dailyHours"
                   ? `linear-gradient(90deg, #4ade80, ${YELLOW}, ${RED})`
                   : YELLOW,
-                width: `${((Number((form as Record<string, number | string>)[key]) - min) / (max - min)) * 100}%`,
+                width: `${((Number(form[key as keyof Inputs]) - min) / (max - min)) * 100}%`,
                 transition: "width 0.1s",
               }}
             />
           </div>
           <input
             type="range" min={min} max={max} step={step}
-            value={Number((form as Record<string, number | string>)[key])}
+            value={Number(form[key as keyof Inputs])}
             onChange={e => setForm(f => ({ ...f, [key]: parseFloat(e.target.value) }))}
             style={{ width: "100%", marginTop: "0.5rem", accentColor: YELLOW, cursor: "none", background: "transparent" }}
           />
@@ -448,7 +450,7 @@ function Results({ inputs, onReset }: { inputs: Inputs; onReset: () => void }) {
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.7, ease: EASE }}
         style={{
           background: verdict.color, padding: "1.25rem 3rem",
           display: "flex", justifyContent: "space-between", alignItems: "center",

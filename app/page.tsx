@@ -7,7 +7,7 @@ import {
   useScroll,
   useTransform,
   useSpring,
-  useMotionValue
+  useMotionValue,
 } from "motion/react";
 
 /* ─── tokens ─── */
@@ -18,12 +18,14 @@ const MUTED = "#6a6a60";
 const BORDER = "#2a2a24";
 
 /* ─── reusable variant ─── */
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   show: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 },
+    transition: { duration: 0.7, ease: EASE, delay: i * 0.12 },
   }),
 };
 
